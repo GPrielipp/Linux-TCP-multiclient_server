@@ -143,8 +143,9 @@ int main(int argc , char *argv[])
             clientCount++;
             std::ostringstream msg;
             msg << ntohs(gethostid()) << " has joined the chat.\r\n" << clientCount-1 << " people are on.\r\n";
-            for (int cl : client_socket)
+            for (i = 0; i < max_clients; i++)
             {
+                int cl = client_socket[i];
                 if (cl != 0)
                     send(cl , msg.str().c_str() , strlen(msg.str().c_str()) , 0 ); 
             } 
@@ -173,8 +174,9 @@ int main(int argc , char *argv[])
                     std::ostringstream msg;
                     msg << ntohs(gethostid()) << " has left the chat.\n\r" << --clientCount-1 << " people remain.\n\r";
 
-                    for (int cl : client_socket)
+                    for (int i = 0; i < max_clients; i++)
                     {
+                        int cl = client_socket[i];
                         if (cl != sd && cl!=0)
                             send(cl , msg.str().c_str() , strlen(msg.str().c_str()) , 0 ); 
                     }
