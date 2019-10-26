@@ -142,9 +142,10 @@ int main(int argc , char *argv[])
             }  
             clientCount++;
             std::ostringstream msg;
-            msg << ntohs(gethostid()) << " has joined the chat.\r\n" << clientCount-1 << " people are on.\r\n";
-            for (i = 0; i < max_clients; i++)
-            {
+            msg << ntohs(address.sin_port) << " has joined the chat.\r\n" << clientCount-1 << " people are on.\r\n";
+            for ( i = 0 ; i < max_clients ; i++)   
+            {   
+                //socket descriptor  
                 int cl = client_socket[i];
                 if (cl != 0)
                     send(cl , msg.str().c_str() , strlen(msg.str().c_str()) , 0 ); 
@@ -172,10 +173,11 @@ int main(int argc , char *argv[])
 
 
                     std::ostringstream msg;
-                    msg << ntohs(gethostid()) << " has left the chat.\n\r" << --clientCount-1 << " people remain.\n\r";
+                    msg << ntohs(address.sin_port) << " has left the chat.\n\r" << --clientCount-1 << " people remain.\n\r";
 
-                    for (int i = 0; i < max_clients; i++)
-                    {
+                    for ( i = 0 ; i < max_clients ; i++)   
+                    {   
+                        //socket descriptor  
                         int cl = client_socket[i];
                         if (cl != sd && cl!=0)
                             send(cl , msg.str().c_str() , strlen(msg.str().c_str()) , 0 ); 
@@ -190,9 +192,11 @@ int main(int argc , char *argv[])
                     // buffer[valread] = '\0';   
                     // send data to other clients
                     std::ostringstream msg;
-                    msg << "\t\t\t\t\t\t" << ntohs(gethostid()) << ": " << buffer << "\r";
-                    for (int cl : client_socket)
-                    {
+                    msg << "\t\t\t\t\t\t" << ntohs(address.sin_port) << ": " << buffer << "\r";
+                    for ( i = 0 ; i < max_clients ; i++)   
+                    {   
+                        //socket descriptor  
+                        int cl = client_socket[i];
                         if (cl != sd && cl!=0)
                             send(cl , msg.str().c_str() , strlen(msg.str().c_str()) , 0 ); 
                     }
