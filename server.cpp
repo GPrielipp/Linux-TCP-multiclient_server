@@ -11,6 +11,7 @@
 #include <netinet/in.h>  
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros  
 #include <sstream>
+#include <map>
      
 #define TRUE   1  
 #define FALSE  0  
@@ -18,6 +19,8 @@
      
 int main(int argc , char *argv[])   
 {   
+    std::map<int, int> names = std::map<int, int>();
+
     int opt = TRUE;   
     int master_socket , addrlen , new_socket , client_socket[30] ,  
           max_clients = 30 , activity, i , valread , sd;   
@@ -125,7 +128,8 @@ int main(int argc , char *argv[])
 
             //inform user of socket number - used in send and receive commands  
             printf("New connection , socket fd is %d , ip is : %s , port : %d  \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));   
-           
+            
+            names[new_socket] = ntohs(address.sin_port);
             //send new connection greeting message  
             // send(new_socket, hello_message.str().c_str(), sizeof( hello_message.str().c_str() ), 0);
                  
@@ -168,12 +172,11 @@ int main(int argc , char *argv[])
                     printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));   
                          
                     //Close the socket and mark as 0 in list for reuse  
+                    std::ostringstream msg;
+                    msg << names[sd] << " has left the chat.\n\r" << --clientCount-1 << " people remain.\n\r";
+
                     close( sd );   
                     client_socket[i] = 0;   
-
-
-                    std::ostringstream msg;
-                    msg << ntohs(address.sin_port) << " has left the chat.\n\r" << --clientCount-1 << " people remain.\n\r";
 
                     for ( i = 0 ; i < max_clients ; i++)   
                     {   
@@ -192,7 +195,7 @@ int main(int argc , char *argv[])
                     // buffer[valread] = '\0';   
                     // send data to other clients
                     std::ostringstream msg;
-                    msg << "\t\t\t\t\t\t" << ntohs(address.sin_port) << ": " << buffer << "\r";
+                    msg << "\t\t\t\t\t\t" << names[sd] << ": " << buffer << "\r";
                     for ( i = 0 ; i < max_clients ; i++)   
                     {   
                         //socket descriptor  
